@@ -1,4 +1,4 @@
-# Single Image Super Resolution by Efficient Edge Fusion (Keras Implementation)
+# Single Image Super Resolution by Efficient Edge Fusion Network(Keras Implementation)
 
 ## Overview
 
@@ -17,7 +17,7 @@ Upscaling the image by means of edge fusion and spatial attention technique pres
 Matlab files are used as tarining and validation data. 
 * aug_train_data.m: Flips, rotates the training data according to the desired patch
 * aug_test_data.m: Generates the validation patch of given size
-* downscale_testimage.m: Downscales the input as per given scale. Is used for test purpose 
+* downscale_testimage.m: Downscales the input as per given scale. It is used for the test purpose.
 The training and validation mat files can be found [here](https://drive.google.com/file/d/1ug-B6FPuWfFKLays91rGUBuyrc9tHJD6/view?usp=sharing).
 In addition, all the benchmark training and testing images is given [here](https://drive.google.com/file/d/1ug-B6FPuWfFKLays91rGUBuyrc9tHJD6/view?usp=sharing).  
 
