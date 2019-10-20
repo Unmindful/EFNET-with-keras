@@ -20,7 +20,7 @@ Matlab files are used as tarining and validation data.
 * downscale_testimage.m: Downscales the input as per given scale. It is used for the test purpose.
 
 The training and validation mat files can be found [here](https://drive.google.com/file/d/1ug-B6FPuWfFKLays91rGUBuyrc9tHJD6/view?usp=sharing).
-In addition, all the benchmark training and testing images is given [here](https://drive.google.com/file/d/1ug-B6FPuWfFKLays91rGUBuyrc9tHJD6/view?usp=sharing).  
+In addition, all the benchmark training and testing images are given [here](https://drive.google.com/file/d/1ug-B6FPuWfFKLays91rGUBuyrc9tHJD6/view?usp=sharing).  
 
 ## Implementation
 
