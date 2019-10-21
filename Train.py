@@ -36,7 +36,7 @@ model2 = model_feature2
 model_con1 = model_feature2
 model_con2 = model_feature2
 
-for blocks in range (4):
+for blocks in range (ResBlock):
 	x1 = model1
 	model1 = RES_add_Block(model1, res_number=4)
 	model_con1 = concatenate([model_con1,model1])
@@ -45,7 +45,7 @@ model_edge_sob = Conv2D(6, (1, 1), padding='same', activation='relu', kernel_ini
 model_edge_lap = Conv2D(3, (1, 1), padding='same', activation='relu', kernel_initializer='glorot_uniform')(model_con1)
 
 
-for blocks in range (4):
+for blocks in range (MulBlock):
 	model2 = RES_mul_Block(model2)
 	model2 = concatenate([model_con2,model2])
 
