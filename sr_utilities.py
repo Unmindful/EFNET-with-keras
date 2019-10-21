@@ -23,6 +23,8 @@ scale = 4
 IMG_SIZE = (192/scale, 192/scale, 3)
 BATCH_SIZE = 16
 EPOCHS = 100
+ResBlock = 4
+MulBlock = 4
 TRAIN_SCALES = [scale]
 VALID_SCALES = [scale]
 
