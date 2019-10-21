@@ -17,7 +17,7 @@ from keras.layers import SeparableConv2D, MaxPooling2D, Input, ZeroPadding2D, me
 from keras.optimizers import SGD, Adam
 from keras.callbacks import ModelCheckpoint, EarlyStopping, LearningRateScheduler
 from subpixel_old import Subpixel
-from sr_utilities import scale, TRAIN_SCALE, VALID_SCALE, get_image_list, image_gen, sobel, laplacian, PSNR, SSIM, sob_loss_function,lap_loss_function, step_decay, RES_add_Block, RES_mul_Block, sobel_loss, laplacian_loss
+from sr_utilities import scale, ResBlock, MulBlock, TRAIN_SCALE, VALID_SCALE, get_image_list, image_gen, sobel, laplacian, PSNR, SSIM, sob_loss_function,lap_loss_function, step_decay, RES_add_Block, RES_mul_Block, sobel_loss, laplacian_loss
 
 #Get the testing data
 
