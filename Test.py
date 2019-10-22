@@ -5,6 +5,7 @@ import numpy as np
 import re, math
 import os, glob, sys, threading, random
 import scipy.io
+import time
 from scipy import ndimage, misc
 from skimage import filters, feature
 from keras import backend as K
@@ -41,87 +42,87 @@ for im_name in os.listdir(data_path):
 	TRAIN_SCALES = [scale]
 	VALID_SCALES = [scale]
 
-    input_img = Input(shape=IMG_SIZE)
-    model_sob = Lambda(sobel)(input_img)
-    model_lap = Lambda(laplacian)(input_img)
-    model_feature1 = Conv2D(64, (3, 3), padding='same', kernel_initializer='glorot_uniform')(input_img)
+    	input_img = Input(shape=IMG_SIZE)
+    	model_sob = Lambda(sobel)(input_img)
+    	model_lap = Lambda(laplacian)(input_img)
+    	model_feature1 = Conv2D(64, (3, 3), padding='same', kernel_initializer='glorot_uniform')(input_img)
         model_feature2  =concatenate([model_feature1,model_sob,model_lap])
-    model_feature2 = Conv2D(64, (3, 3), padding='same', kernel_initializer='glorot_uniform')(model_feature2)
+    	model_feature2 = Conv2D(64, (3, 3), padding='same', kernel_initializer='glorot_uniform')(model_feature2)
 
-    model1 = model_feature2
-    model2 = model_feature2
-    model_con1 = model_feature2
-    model_con2 = model_feature2
+    	model1 = model_feature2
+    	model2 = model_feature2
+    	model_con1 = model_feature2
+    	model_con2 = model_feature2
 
-    for blocks in range (ResBlock):
-        x1 = model1
-        model1 = RES_add_Block(model1, res_number=4)
-        model_con1 = concatenate([model_con1,model1])
+    	for blocks in range (ResBlock):
+        	x1 = model1
+        	model1 = RES_add_Block(model1, res_number=4)
+        	model_con1 = concatenate([model_con1,model1])
 
-    model_edge_sob = Conv2D(6, (1, 1), padding='same', activation='relu', kernel_initializer='glorot_uniform')(model_con1)
-    model_edge_lap = Conv2D(3, (1, 1), padding='same', activation='relu', kernel_initializer='glorot_uniform')(model_con1)
+    	model_edge_sob = Conv2D(6, (1, 1), padding='same', activation='relu', kernel_initializer='glorot_uniform')(model_con1)
+    	model_edge_lap = Conv2D(3, (1, 1), padding='same', activation='relu', kernel_initializer='glorot_uniform')(model_con1)
 
 
-    for blocks in range (MulBlock):
-        model2 = RES_mul_Block(model2)
-        model2 = concatenate([model_con2,model2])
+    	for blocks in range (MulBlock):
+        	model2 = RES_mul_Block(model2)
+        	model2 = concatenate([model_con2,model2])
 
     
-    model1 = Conv2D(64, (1, 1), padding='same', kernel_initializer='glorot_uniform')(model_con1)
-    model1 = SeparableConv2D(64, (3, 3), padding='same', kernel_initializer='glorot_uniform')(model1)
-    model1 = add([model1, model_feature1])
-    model2 = Conv2D(64, (1, 1), padding='same', activation='relu', kernel_initializer='glorot_uniform')(model2)
+    	model1 = Conv2D(64, (1, 1), padding='same', kernel_initializer='glorot_uniform')(model_con1)
+    	model1 = SeparableConv2D(64, (3, 3), padding='same', kernel_initializer='glorot_uniform')(model1)
+    	model1 = add([model1, model_feature1])
+    	model2 = Conv2D(64, (1, 1), padding='same', activation='relu', kernel_initializer='glorot_uniform')(model2)
 
 #Upscaling the inputs by means of Efficient Subpixel Convolution
-    if scale >= 2 and scale != 3:
-        model1 = Subpixel(64, (3,3), r = 2,padding='same',activation='relu')(model1)
-        model2 = Subpixel(1, (3,3), r = 2,padding='same',activation='relu')(model2)
-        model_edge_sob = Subpixel(6, (3,3), r = 2,padding='same',activation='relu')(model_edge_sob)
-        model_edge_lap = Subpixel(3, (3,3), r = 2,padding='same',activation='relu')(model_edge_lap)
-        model_in = Subpixel(64, (3,3), r = 2,padding='same',activation='relu')(input_img)
+    	if scale >= 2 and scale != 3:
+        	model1 = Subpixel(64, (3,3), r = 2,padding='same',activation='relu')(model1)
+        	model2 = Subpixel(1, (3,3), r = 2,padding='same',activation='relu')(model2)
+        	model_edge_sob = Subpixel(6, (3,3), r = 2,padding='same',activation='relu')(model_edge_sob)
+        	model_edge_lap = Subpixel(3, (3,3), r = 2,padding='same',activation='relu')(model_edge_lap)
+        	model_in = Subpixel(64, (3,3), r = 2,padding='same',activation='relu')(input_img)
     
-    if scale >= 4:
-        model1 = Subpixel(64, (3,3), r = 2,padding='same',activation='relu')(model1)
-        model2 = Subpixel(1, (3,3), r = 2,padding='same',activation='relu')(model2)
-        model_edge_sob = Subpixel(6, (3,3), r = 2,padding='same',activation='relu')(model_edge_sob)
-        model_edge_lap = Subpixel(3, (3,3), r = 2,padding='same',activation='relu')(model_edge_lap)
-        model_in = Subpixel(64, (3,3), r = 2,padding='same',activation='relu')(input_img)
+    	if scale >= 4:
+        	model1 = Subpixel(64, (3,3), r = 2,padding='same',activation='relu')(model1)
+        	model2 = Subpixel(1, (3,3), r = 2,padding='same',activation='relu')(model2)
+        	model_edge_sob = Subpixel(6, (3,3), r = 2,padding='same',activation='relu')(model_edge_sob)
+        	model_edge_lap = Subpixel(3, (3,3), r = 2,padding='same',activation='relu')(model_edge_lap)
+        	model_in = Subpixel(64, (3,3), r = 2,padding='same',activation='relu')(input_img)
     
-    if scale >= 8:
-        model1 = Subpixel(64, (3,3), r = 2,padding='same',activation='relu')(model1)
-        model2 = Subpixel(1, (3,3), r = 2,padding='same',activation='relu')(model2)
-        model_edge_sob = Subpixel(6, (3,3), r = 2,padding='same',activation='relu')(model_edge_sob)
-        model_edge_lap = Subpixel(3, (3,3), r = 2,padding='same',activation='relu')(model_edge_lap)
-        model_in = Subpixel(64, (3,3), r = 2,padding='same',activation='relu')(input_img)
+    	if scale >= 8:
+        	model1 = Subpixel(64, (3,3), r = 2,padding='same',activation='relu')(model1)
+        	model2 = Subpixel(1, (3,3), r = 2,padding='same',activation='relu')(model2)
+        	model_edge_sob = Subpixel(6, (3,3), r = 2,padding='same',activation='relu')(model_edge_sob)
+        	model_edge_lap = Subpixel(3, (3,3), r = 2,padding='same',activation='relu')(model_edge_lap)
+        	model_in = Subpixel(64, (3,3), r = 2,padding='same',activation='relu')(input_img)
     
-    if scale == 3:
-        model1 = Subpixel(64, (3,3), r = 3,padding='same',activation='relu')(model1)
-        model2 = Subpixel(1, (3,3), r = 3,padding='same',activation='relu')(model2)
-        model_edge_sob = Subpixel(6, (3,3), r = 3,padding='same',activation='relu')(model_edge_sob)
-        model_edge_lap = Subpixel(3, (3,3), r = 3,padding='same',activation='relu')(model_edge_lap)
-        model_in = Subpixel(64, (3,3), r = 3,padding='same',activation='relu')(input_img)
+    	if scale == 3:
+        	model1 = Subpixel(64, (3,3), r = 3,padding='same',activation='relu')(model1)
+        	model2 = Subpixel(1, (3,3), r = 3,padding='same',activation='relu')(model2)
+        	model_edge_sob = Subpixel(6, (3,3), r = 3,padding='same',activation='relu')(model_edge_sob)
+        	model_edge_lap = Subpixel(3, (3,3), r = 3,padding='same',activation='relu')(model_edge_lap)
+        	model_in = Subpixel(64, (3,3), r = 3,padding='same',activation='relu')(input_img)
 
 
 #Apply 1x1 convolution for Soblel and Laplacian edge loss purpose
-    model_edge_sob = Lambda(lambda x:x, name="sobel")(model_edge_sob)
-    model_edge_sob_1 = Conv2D(1, (1, 1), padding='same', activation='relu', kernel_initializer='glorot_uniform')(model_edge_sob)
+    	model_edge_sob = Lambda(lambda x:x, name="sobel")(model_edge_sob)
+    	model_edge_sob_1 = Conv2D(1, (1, 1), padding='same', activation='relu', kernel_initializer='glorot_uniform')(model_edge_sob)
 
-    model_edge_lap = Lambda(lambda x:x, name="lap")(model_edge_lap)
-    model_edge_lap_1 = Conv2D(1, (1, 1), padding='same', activation='relu', kernel_initializer='glorot_uniform')(model_edge_lap)
+    	model_edge_lap = Lambda(lambda x:x, name="lap")(model_edge_lap)
+    	model_edge_lap_1 = Conv2D(1, (1, 1), padding='same', activation='relu', kernel_initializer='glorot_uniform')(model_edge_lap)
 
 #Apply Hard Sigmoid for Spatial Attention purpose
-    model2 = Activation('hard_sigmoid')(model2)
+    	model2 = Activation('hard_sigmoid')(model2)
 
 
-    model_sob_lap = add([model1, model_edge_sob_1, model_edge_lap_1])
-    model_attention = multiply([model1, model2])
-    model = add([model_attention, model_in, model_edge_sob_1, model_edge_lap_1])
+    	model_sob_lap = add([model1, model_edge_sob_1, model_edge_lap_1])
+    	model_attention = multiply([model1, model2])
+    	model = add([model_attention, model_in, model_edge_sob_1, model_edge_lap_1])
 
 #Reconstruction Block
-    output_img = Conv2D(3, (3, 3), padding='same', kernel_initializer='glorot_uniform',name='4x_output')(model)
-    output_img = Lambda(lambda x:x, name="o_f")(output_img)
+    	output_img = Conv2D(3, (3, 3), padding='same', kernel_initializer='glorot_uniform',name='4x_output')(model)
+    	output_img = Lambda(lambda x:x, name="o_f")(output_img)
 
-    model = Model(inputs=[input_img], outputs=[output_img, model_edge_sob, model_edge_lap])
+    	model = Model(inputs=[input_img], outputs=[output_img, model_edge_sob, model_edge_lap])
 	model.load_weights('./Saved Models/sr_EFNet+_with100epoch_model.h5')
 	adam = Adam(lr=0, epsilon=10**(-8))
 	sgd = SGD(lr=0, momentum=0.9, decay=1e-4, nesterov=False, clipnorm=1)
